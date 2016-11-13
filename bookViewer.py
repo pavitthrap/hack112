@@ -4,8 +4,8 @@
 
 # from cs112_f16_wk10 import assertEqual, assertAlmostEqual, lintAll, testAll
 from wikipedia_api_modified import *
-import math, string, copy, random
-
+from PIL import Image, ImageTk
+import cv2
 #################################################
 # Helper functions
 #################################################
@@ -31,7 +31,7 @@ def roundHalfUp(d):
 ## ignore_rest: graphics go below here!
 ##############################################
 
-from tkinter import *
+from Tkinter import *
 
 
 def make2dList(rows, cols, value):
@@ -183,37 +183,6 @@ def drawHelpScreen(canvas,data):
     "Press mouse to return to caller's mode")
     
 
-# def drawCell(canvas, data, row, col):
-#     x0=data.width/2-data.currentX+row*data.cellWidth
-#     y0=data.height/2-data.currentY+col*data.cellHeight
-#     x1=x0+data.cellWidth
-#     y1=y0+data.cellHeight
-#     color=data.fillCell
-#     if [row,col]==data.currentCell:
-#         if color=="lightyellow":
-#             color="yellow"
-#         elif color=="lightblue":
-#             color="blue"
-#     canvas.create_rectangle(x0,y0,x1,y1,fill=color)
-#     canvas.create_text((x0+x1)/2,(y0+y1)/2-data.margin,text="(%d,%d)"%(row,col))
-#     canvas.create_text((x0+x1)/2,(y0+y1)/2+data.margin,text="%d"%
-#     (data.board[row][col]))
-# 
-# def drawBoard(canvas, data):
-#     for row in range(data.rows):
-#         data.fillCell="lightyellow" if row%2==0 else "lightblue"
-#         for col in range(data.cols):
-#             drawCell(canvas, data, row, col)
-#             data.fillCell=("lightblue" if data.fillCell=="lightyellow" 
-#             else "lightyellow")
-# 
-# def drawRedDot(canvas,data):
-#     data.dotRadius=5
-#     x0=data.width/2-data.dotRadius
-#     y0=data.height/2-data.dotRadius
-#     x1=data.width/2+data.dotRadius
-#     y1=data.height/2+data.dotRadius
-#     canvas.create_oval(x0,y0,x1,y1,fill="red")
 
 def drawTimer(canvas,data):
     displayTime=math.ceil(data.currentTime)
@@ -235,9 +204,19 @@ def drawInstructions(canvas,data):
     text="Press 'h' for help! Use Space, Tab, MouseButton + Arrows", 
     font="Helvetica 6 bold")
 
+def drawImage(canvas, width, height,path):
+    image = Image.open(path)
+    imageWidth, imageHeight = image.size
+    newImageWidth, newImageHeight = imageWidth//3, imageHeight//3
+    image = image.resize((newImageWidth, newImageHeight), Image.ANTIALIAS)
+    photo = ImageTk.PhotoImage(image)
+    label = Label(image=photo)
+    label.image = photo # keep a reference!
+    canvas.create_image(newImageWidth//2, newImageHeight//2, image = photo)
 
 def drawGame(canvas,data):
-    pass #draw book here
+    drawImage(canvas,data.width/2,data.height/2,"book.jfif")
+     #draw book here
 
 
 ################################3
