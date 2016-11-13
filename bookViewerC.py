@@ -27,6 +27,7 @@ def init(data):
     data.rectY=data.height/2+75
     data.start=True
     data.options=['Water','Pizza','Gold','Einstein','Cellphone','Madrid','Boots','Chair']
+    data.selected=data.options[1]
 
 ######################
 def mousePressed(event, data):

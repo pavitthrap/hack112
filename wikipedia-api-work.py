@@ -1,7 +1,7 @@
 import requests
 import json
 
-
+# New York,Skyscraper,Hoodie Allen,Laptop,
 def main():
     extract=getInput()
     summary=parseExtract2(extract)
@@ -16,7 +16,8 @@ def getInput():
         response = requests.get(url)
         data=json.loads(response.content)
         extract=data['query']['pages'][0]['extract']
-        if str(extract).find('refer') != -1:
+        if str(extract).find('refer') == -1:
+            print(" did not find refer")
             j=0
         print("Sorry, but the article you requested does not exist. Please suggest an alternate title.")
 

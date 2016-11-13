@@ -9,7 +9,7 @@ def getInput(title):
     data=json.loads(response.content)
     extract=data['query']['pages'][0]['extract']
     print("hello")
-    if str(extract).find('refer') != -1:
+    if str(extract).find('refer') == -1:
         return parseExtract2(extract)
     else:
         return None
