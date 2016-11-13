@@ -1,0 +1,9 @@
+{
+	"batchcomplete": true, 
+	"query": {
+		"pages": [
+			{
+				"extract": "<p><b>Albert Einstein</b> (<span><span>/<span><span title=\"/\u02c8/ primary stress follows\">\u02c8</span><span title=\"/a\u026a/ long 'i' in 'tide'\">a\u026a</span><span title=\"'n' in 'no'\">n</span><span title=\"'s' in 'sigh'\">s</span><span title=\"'t' in 'tie'\">t</span><span title=\"/a\u026a/ long 'i' in 'tide'\">a\u026a</span><span title=\"'n' in 'no'\">n</span></span>/</span></span>; <small>German:</small> <span title=\"Representation in the International Phonetic Alphabet (IPA)\">[\u02c8alb\u025b\u0250\u032ft \u02c8a\u026an\u0283ta\u026an]</span>; 14 March 1879&#160;\u2013 18 April 1955) was a German-born theoretical physicist. He developed the general theory of relativity, one of the two pillars of modern physics (alongside quantum mechanics). Einstein's work is also known for its influence on the philosophy of science.</p>", 
+				"ns": 0, 
+				"pageid": 736, 
+				"title": "Albert Einstein"}]}}
