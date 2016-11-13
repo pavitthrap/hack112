@@ -36,7 +36,7 @@ def bubbleinit(data):
     data.radius = 20
     data.images = 'apple.jpg'
     data.bubbleWords = "APPLE"
-    data.bubbleLetters1 = getLetters(data, data.bubbleWords[0])
+    data.bubbleLetters = getLetters(data, data.bubbleWords)
     #data.bubbleLetters2 = getLetters(data, data.bubbleWords[1])
     #data.AllLetters = [data.bubbleLetters1]
     data.bubbleScreen = 0
@@ -44,8 +44,10 @@ def bubbleinit(data):
     data.bubbleLost = 1
     data.bubblePlay = -2
     data.bubbleStartMode = 0
-    data.bubbleUp = 1
-    data.bubble
+    data.bubbleDirection = 0
+    data.color = ["white"] * 10
+    data.result = []
+    data.word = ''
     
 def getLetters(data, word):
     result = list(word)
@@ -57,7 +59,7 @@ def getLetters(data, word):
 def checkDone(data, result):
     s = list("APPLE")
     count = 0
-    for i in range(result):
+    for i in range(len(result)):
         if result[i] == s[i]:
             count += 1
             continue
@@ -72,60 +74,73 @@ def mousePressed(event, data):
         data.mode = data.bubbleMode
     if data.mode == data.bubbleMode:
         if data.bubbleScreen == data.bubblePlay:
-            result = []
             for i in range(10):
                 if (event.x > data.cx[i] - data.radius and 
                     event.x < data.cx[i] + data.radius and 
-                    event.y > data.cy - data.radius and 
-                    event.y < data.cy + data.radius):
-                        result += data.bubbleLetters1[i]
-            checkDone(data, result)
+                    event.y > data.cy[i] - data.radius and 
+                    event.y < data.cy[i] + data.radius):
+                        data.color[i] = "blue"
+                        data.result += data.bubbleLetters[i]
+                        data.word = "".join(data.result)
+            checkDone(data, data.result)
                     
 
 def keyPressed(event, data):
     if data.mode == data.bubbleMode:
         if data.bubbleScreen == data.bubbleStartMode:
             if event.keysym == "Up": data.bubbleScreen = data.bubblePlay
-
+            if event.keysym == "r": data.mode = 0
+            
 def timerFired(data):
     data.currImg = getImage(data)
     if data.mode == data.bubbleMode:
         if data.bubbleScreen == data.bubblePlay:
             for i in range(10):
-                if data.cy[i] >= 20 and data.cy[i] < 725:
-                    data.cy[i] += 1
-                else:
-                    data.cy[i] += 1
-
+                if data.bubbleDirection == 0:
+                    if data.cy[i] < 725:
+                        data.cy[i] += 5
+                    else:
+                        data.bubbleDirection == 1
+                if data.bubbleDirection == 1:
+                    if data.cy[i] > 0:
+                        data.cy[i] -= 5
+                    else:
+                        data.bubbleDirection == 0
+            
     
 
 def drawBubbleGame(canvas, data):
     if data.bubbleScreen == data.bubbleStartMode:
-        canvas.create_text(500, 100, text = "Press Up Arrow to Start!", font = "Ariel 50")
+        canvas.create_text(200, 100, text = "Press Up Arrow to Start!", font = "Ariel 40")
     if data.bubbleScreen == data.bubblePlay:
         drawImage(canvas, data.images)
-        drawBubbles(canvas, data, data.bubbleLetters1)
+        drawBubbles(canvas, data, data.bubbleLetters)
+        canvas.create_text(970, 400, text = data.word, font = "Ariel 30", fill = "white")
+    if data.bubbleScreen == data.bubbleLost:
+        canvas.create_text(200, 100, text = "You Lose :(", font = "Ariel 40 bold")
+    if data.bubbleScreen == data.bubbleWin:
+        canvas.create_text(200, 100, text = "You Win!! :D", font = "Ariel 40 bold")
             
 def drawBubbles(canvas, data, letters):
-    canvas.create_oval(data.cx[0] - data.radius, data.cy[0] - data.radius, data.cx[0] + data.radius, data.cy[0] + data.radius, fill = "white")
+    canvas.create_oval(data.cx[0] - data.radius, data.cy[0] - data.radius, data.cx[0] + data.radius, data.cy[0] + data.radius, fill = data.color[0])
     canvas.create_text(data.cx[0], data.cy[0], text = letters[0], font = "Ariel 30 bold")
-    canvas.create_oval(data.cx[1] - data.radius, data.cy[1] - data.radius, data.cx[1] + data.radius, data.cy[1] + data.radius, fill = "white")
+    canvas.create_oval(data.cx[1] - data.radius, data.cy[1] - data.radius, data.cx[1] + data.radius, data.cy[1] + data.radius, fill = data.color[1])
     canvas.create_text(data.cx[1], data.cy[1], text = letters[1], font = "Ariel 30 bold")
-    canvas.create_oval(data.cx[2] - data.radius, data.cy[2] - data.radius, data.cx[2] + data.radius, data.cy[2] + data.radius, fill = "white")
+    canvas.create_oval(data.cx[2] - data.radius, data.cy[2] - data.radius, data.cx[2] + data.radius, data.cy[2] + data.radius, fill = data.color[2])
     canvas.create_text(data.cx[2], data.cy[2], text = letters[2], font = "Ariel 30 bold")
-    canvas.create_oval(data.cx[3] - data.radius, data.cy[3] - data.radius, data.cx[3] + data.radius, data.cy[3] + data.radius, fill = "white")
+    canvas.create_oval(data.cx[3] - data.radius, data.cy[3] - data.radius, data.cx[3] + data.radius, data.cy[3] + data.radius, fill = data.color[3])
     canvas.create_text(data.cx[3], data.cy[3], text = letters[3], font = "Ariel 30 bold")
-    canvas.create_oval(data.cx[4] - data.radius, data.cy[4] - data.radius, data.cx[4] + data.radius, data.cy[4] + data.radius, fill = "white")
+    canvas.create_oval(data.cx[4] - data.radius, data.cy[4] - data.radius, data.cx[4] + data.radius, data.cy[4] + data.radius, fill = data.color[4])
     canvas.create_text(data.cx[4], data.cy[4], text = letters[4], font = "Ariel 30 bold")
-    canvas.create_oval(data.cx[5] - data.radius, data.cy[5] - data.radius, data.cx[5] + data.radius, data.cy[5] + data.radius, fill = "white")
+    canvas.create_oval(data.cx[5] - data.radius, data.cy[5] - data.radius, data.cx[5] + data.radius, data.cy[5] + data.radius, fill = data.color[5])
     canvas.create_text(data.cx[5], data.cy[5], text = letters[5], font = "Ariel 30 bold")
-    canvas.create_oval(data.cx[6] - data.radius, data.cy[6] - data.radius, data.cx[6] + data.radius, data.cy[6] + data.radius, fill = "white")
+    canvas.create_oval(data.cx[6] - data.radius, data.cy[6] - data.radius, data.cx[6] + data.radius, data.cy[6] + data.radius, fill = data.color[6])
     canvas.create_text(data.cx[6], data.cy[6], text = letters[6], font = "Ariel 30 bold")
-    canvas.create_oval(data.cx[7] - data.radius, data.cy[7] - data.radius, data.cx[7] + data.radius, data.cy[7] + data.radius, fill = "white")
+    canvas.create_oval(data.cx[7] - data.radius, data.cy[7] - data.radius, data.cx[7] + data.radius, data.cy[7] + data.radius, fill = data.color[7])
     canvas.create_text(data.cx[7], data.cy[7], text = letters[7], font = "Ariel 30 bold")
-    canvas.create_oval(data.cx[8] - data.radius, data.cy[8] - data.radius, data.cx[8] + data.radius, data.cy[8] + data.radius, fill = "white")
+    canvas.create_oval(data.cx[8] - data.radius, data.cy[8] - data.radius, data.cx[8] + data.radius, data.cy[8] + data.radius, fill = data.color[8])
     canvas.create_text(data.cx[8], data.cy[8], text = letters[8], font = "Ariel 30 bold")
-    canvas.create_oval(data.cx[9] - data.radius, data.cy[9] - data.radius, data.cx[9] + data.radius, data.cy[9] + data.radius, fill = "white")
+    canvas.create_oval(data.cx[9] - data.radius, data.cy[9] - data.radius, data.cx[9] + data.radius, data.cy[9] + data.radius, fill = data.color[9])
     canvas.create_text(data.cx[9], data.cy[9], text = letters[9], font = "Ariel 30 bold")
 
         
@@ -137,6 +152,7 @@ def redrawAll(canvas, data):
     drawTitle(canvas, data)
     if data.mode == data.bubbleMode:
         drawBubbleGame(canvas, data)
+        
 
 def drawTitle(canvas, data):
     canvas.create_text(data.width//2, data.height-30, text="TITLE", font="Arial 65 bold")
@@ -204,7 +220,7 @@ def drawImage(canvas, path):
     photo = ImageTk.PhotoImage(image)
     label = Label(image=photo)
     label.image = photo # keep a reference!
-    canvas.create_image(newImageWidth//2, newImageHeight//2, image = photo)
+    canvas.create_image(3*newImageWidth, newImageHeight//2, image = photo)
 
 
 
