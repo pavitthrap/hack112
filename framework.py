@@ -28,6 +28,8 @@ def redrawAll(canvas, data):
     drawBackground(canvas, data)
     drawFrame(canvas, data.currImg, data)
     drawTitle(canvas, data)
+    drawImage(canvas, 500, 500)
+    drawText(canvas, 500, 500)
 
 def drawTitle(canvas, data):
     canvas.create_text(data.width//2, data.height-30, text="TITLE", font="Arial 65 bold")
@@ -50,6 +52,21 @@ def getImage(data): # gets a new frame
     img=img.crop((0,0,desiredW,h))
     tkImg=ImageTk.PhotoImage(image=img)
     return tkImg
+
+def drawImage(canvas, width, height):
+    path = 'bassethound.jpg'
+    image = Image.open(path)
+    imageWidth, imageHeight = image.size
+    newImageWidth, newImageHeight = imageWidth//3, imageHeight//3
+    image = image.resize((newImageWidth, newImageHeight), Image.ANTIALIAS)
+    photo = ImageTk.PhotoImage(image)
+    label = Label(image=photo)
+    label.image = photo # keep a reference!
+    canvas.create_image(newImageWidth//2, newImageHeight//2, image = photo)
+
+def drawText(canvas, width, height):
+    canvas.create_text(width/2, height/2, text = "W o r d", font = "Ariel 40 bold")
+
 
 ####################################
 # adapted from course notes
