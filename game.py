@@ -38,7 +38,7 @@ def init(data):
     data.collecting = True
     data.mode = "splash"
     data.wordArray = ["APPLE", "CAT", "HEART", "BIRD", "STONE"]
-    data.imageList = ["apple.jpg", "cat.jpg", "heart.jpg", "bird.jpg", "stones.jpg"]
+    data.imageList = ["wordapple.jpg", "wordcat.jpg", "heart.jpg", "bird.jpg", "stones.jpg"]
     data.index = 0
 
 #####################################
@@ -49,21 +49,25 @@ def mousePressed(event, data):
     if (data.mode == "splash"):     splashMousePressed(event, data)
     elif (data.mode == "tracing"):   tracingMousePressed(event, data)
     elif (data.mode == "bubble"):       bubbleMousePressed(event, data)
+    elif (data.mode == "book"):       bookMousePressed(event, data)
 
 def keyPressed(event, data):
     if (data.mode == "splash"):     splashKeyPressed(event, data)
     elif (data.mode == "tracing"):   tracingKeyPressed(event, data)
     elif (data.mode == "bubble"):      bubbleKeyPressed(event, data)
+    elif (data.mode == "book"):       bookMousePressed(event, data)
 
 def timerFired(data):
     if (data.mode == "splash"):     splashTimerFired(data)
     elif (data.mode == "tracing"):   tracingTimerFired(data)
     elif (data.mode == "bubble"):       bubbleTimerFired(data)
+    elif (data.mode == "book"):       bookTimerPressed(event, data)
 
 def redrawAll(canvas, data):
     if (data.mode == "splash"):     splashRedrawAll(canvas, data)
     elif (data.mode == "tracing"):   tracingRedrawAll(canvas, data)
     elif (data.mode == "bubble"):       bubbleRedrawAll(canvas, data)
+    elif (data.mode == "book"):       bookRedrawAll(event, data)
 
 
 #####################################
@@ -90,12 +94,11 @@ def splashTimerFired(data):
 def splashRedrawAll(canvas, data):
     drawBackground(canvas, data)
     drawFrame(canvas, data.currImg, data)
-    drawTitle(canvas, data)
     drawFakeButtons(canvas, data)
     drawAnImage(canvas)
 
 def drawFakeButtons(canvas, data):
-    canvas.create_text(data.width - 220, 100, text="Select a Mode", font="Arial 50 bold")
+    canvas.create_text(data.width - 220, 100, text="Mode Selection", font="Arial 50 bold")
     canvas.create_rectangle(data.width-400, 150, data.width-50, 200, fill="lightgray", width=0)
     canvas.create_rectangle(data.width-400, 250, data.width-50, 300, fill="lightgray", width=0)
     canvas.create_rectangle(data.width-400, 350, data.width-50, 400, fill="lightgray", width=0)
@@ -105,7 +108,7 @@ def drawFakeButtons(canvas, data):
 
 def drawAnImage(canvas):
     # how to properly resize?
-    path = 'bassethound.jpg'
+    path = 'gamename.jpg'
     image = Image.open(path)
     imageWidth, imageHeight = image.size
     newImageWidth, newImageHeight = imageWidth//3, imageHeight//3
@@ -113,8 +116,7 @@ def drawAnImage(canvas):
     photo = ImageTk.PhotoImage(image)
     label = Label(image=photo)
     label.image = photo # keep a reference!
-    canvas.create_image(900 + newImageWidth//2, 500 + newImageHeight//2, image = photo)
-    canvas.create_text(900 + newImageWidth//2, 500 + newImageHeight//2, text = "some relevant image", font = "Arial 20 bold")
+    canvas.create_image(1100 + newImageWidth//2, 500 + newImageHeight//2, image = photo)
 
 
    
@@ -133,7 +135,8 @@ def tracingKeyPressed(event, data):
         data.pts = deque()
     elif event.keysym == 'Left':
         data.index = (data.index-1)%len(data.wordArray)
-
+    if (event.keysym == "space"):
+        data.collecting = False if data.collecting else True
 
 def tracingTimerFired(data):
     data.currImg = getImage(data)
@@ -141,7 +144,6 @@ def tracingTimerFired(data):
 def tracingRedrawAll(canvas, data):
     drawBackground(canvas, data)
     drawFrame(canvas, data.currImg, data)
-    # drawTitle(canvas, data)
     drawWord(canvas, data)
     drawInstructions(canvas, data)
     tracingDrawImage(canvas, 500, 500, data)
@@ -152,7 +154,7 @@ def drawWord(canvas, data):
     canvas.create_text(500, 450, text=word, font="Arial 250")
 
 def drawInstructions(canvas, data):
-    msg = "Press the right arrow for the next word!"
+    msg = "Use the arrows for a new word!"
     canvas.create_text(data.width//2, data.height-25, text=msg, font="Arial 25 bold")
 
 def tracingDrawImage(canvas, imageWidth, imageHeight, data):
@@ -170,8 +172,6 @@ def drawBackButton(canvas, data):
     canvas.create_rectangle(data.width-50, data.height - 20, data.width-150, data.height-60, fill="lightgray", width=0)
     canvas.create_text(data.width-100, data.height-40, text="BACK", font="Arial 25 bold")
 
-
-
 #####################################
 #             BUBBLE                #
 ##################################### 
@@ -188,6 +188,24 @@ def bubbleTimerFired(data):
 def bubbleRedrawAll(canvas, data):
     pass
 
+
+#####################################
+#             BOOK                  #
+##################################### 
+
+def bookMousePressed(event, data):
+    pass
+
+def bookKeyPressed(event, data):
+    pass
+
+def bookTimerFired(data):
+    pass
+
+def bookRedrawAll(canvas, data):
+    pass
+
+
 #####################################
 #    OPEN CV TKINTER  FUNCTIONS     #
 #####################################
@@ -202,12 +220,9 @@ def openCVtimerFired(data):
 def openCVredrawAll(canvas, data):
     drawBackground(canvas, data)
     drawFrame(canvas, data.currImg, data)
-    drawTitle(canvas, data)
     drawImage(canvas, 500, 500)
     drawText(canvas, 500, 500)
 
-def drawTitle(canvas, data):
-    canvas.create_text(data.width//2, data.height-30, text="TITLE", font="Arial 65 bold")
 
 def drawBackground(canvas, data):
     canvas.create_rectangle(0,0,data.width*2,data.height*2,
