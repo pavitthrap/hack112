@@ -10,7 +10,7 @@ def rgbString(red, green, blue):
 
 def init(data):
     data.bgColor=rgbString(179, 204, 204)
-    data.width = 1200
+    data.width = 1400
     data.height= 800
     cap = cv2.VideoCapture(0)
     data.cap = cap
@@ -23,12 +23,14 @@ def keyPressed(event, data):
 
 def timerFired(data):
     data.currImg = getImage(data)
-    print(data.currImg)
 
 def redrawAll(canvas, data):
-    # drawBackground(canvas, data)
-    # data.currImg = getImage(data) 
+    drawBackground(canvas, data)
     drawFrame(canvas, data.currImg, data)
+    drawTitle(canvas, data)
+
+def drawTitle(canvas, data):
+    canvas.create_text(data.width//2, data.height-30, text="TITLE", font="Arial 65 bold")
 
 def drawBackground(canvas, data):
     canvas.create_rectangle(0,0,data.width*2,data.height*2,
@@ -56,8 +58,6 @@ def getImage(data): # gets a new frame
 def run(width=300, height=300):
     def redrawAllWrapper(canvas, data):
         canvas.delete(ALL)
-        canvas.create_rectangle(0, 0, data.width, data.height,
-                                fill='white', width=0)
         redrawAll(canvas, data)
         canvas.update()    
 
