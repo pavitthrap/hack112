@@ -89,7 +89,7 @@ def checkIfWon(data):
         if data.bubbleScreen == data.bubblePlay:
             result = []
             for i in range(10): 
-                if (data.cx[i]-data.radius < center < data.cx[i]+data.radius or data.cy[i]-data.radius < center < 
+                if (data.cx[i]-data.radius < center[0] < data.cx[i]+data.radius or data.cy[i]-data.radius < center[1] < 
                     data.cy[i]+data.radius): 
                     result += data.bubbleLetters1[i] 
             checkDone(data, result)
@@ -98,17 +98,17 @@ def checkIfWon(data):
 def mousePressed(event, data):
     if data.mode == 0:
         data.mode = data.bubbleMode
-    if data.mode == data.bubbleMode:
-        if data.bubbleScreen == data.bubblePlay:
-            for i in range(10):
-                if (event.x > data.cx[i] - data.radius and 
-                    event.x < data.cx[i] + data.radius and 
-                    event.y > data.cy[i] - data.radius and 
-                    event.y < data.cy[i] + data.radius):
-                        data.color[i] = "blue"
-                        data.result += data.bubbleLetters[i]
-                        data.word = "".join(data.result)
-            checkDone(data, data.result)
+    # if data.mode == data.bubbleMode:
+    #     if data.bubbleScreen == data.bubblePlay:
+    #         for i in range(10):
+    #             if (event.x > data.cx[i] - data.radius and 
+    #                 event.x < data.cx[i] + data.radius and 
+    #                 event.y > data.cy[i] - data.radius and 
+    #                 event.y < data.cy[i] + data.radius):
+    #                     data.color[i] = "blue"
+    #                     data.result += data.bubbleLetters[i]
+    #                     data.word = "".join(data.result)
+    #         checkDone(data, data.result)
                     
 
 def keyPressed(event, data):
