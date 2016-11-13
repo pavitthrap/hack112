@@ -60,7 +60,7 @@ def init(data):
     data.rectWidth,data.rectHeight=75,20
     data.rectY=data.height/2+75
     data.start=True
-    data.options=['New York','Pizza','Gold','Skyscraper','Laptop','Hoodie Allen','Silver','Chair']
+    data.options=['New York','Pizza','Gold','Skyscraper','Laptop','Hoodie Allen','Necklace','Chair']
 
 #####################################
 #         MODE DISPATCHER           #
@@ -128,7 +128,7 @@ def drawFakeButtons(canvas, data):
 
 def drawAnImage(canvas):
     # how to properly resize?
-    path = 'gamename.jpg'
+    path = 'FUNWITHWORDS.jpg'
     image = Image.open(path)
     imageWidth, imageHeight = image.size
     newImageWidth, newImageHeight = imageWidth//3, imageHeight//3
