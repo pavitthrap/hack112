@@ -8,6 +8,10 @@ import argparse
 import imutils
 from collections import deque 
 
+#####################################
+#         MISC FUNCTIONS            #
+#####################################
+
 def rgbString(red, green, blue):
     return "#%02x%02x%02x" % (red, green, blue)
 
@@ -15,6 +19,11 @@ ap = argparse.ArgumentParser()
 ap.add_argument("-b", "--buffer", type=int, default=40,
     help="max buffer size")
 args = vars(ap.parse_args())
+
+
+#####################################
+#             INIT                  #
+#####################################
 
 def init(data):
     data.bgColor=rgbString(179, 204, 204)
@@ -27,19 +36,129 @@ def init(data):
     data.maxlen = 40
     data.pts= deque(maxlen=args["buffer"]) 
     data.collecting = True
+    data.mode = "splash"
+
+#####################################
+#         MODE DISPATCHER           #
+#####################################
 
 def mousePressed(event, data):
+    if (data.mode == "splash"):     splashMousePressed(event, data)
+    elif (data.mode == "playGame"):   playGameMousePressed(event, data)
+    elif (data.mode == "help"):       helpMousePressed(event, data)
+
+def keyPressed(event, data):
+    if (data.mode == "splash"): splashKeyPressed(event, data)
+    elif (data.mode == "playGame"):   playGameKeyPressed(event, data)
+    elif (data.mode == "help"):       helpKeyPressed(event, data)
+
+def timerFired(data):
+    if (data.mode == "splash"): splashTimerFired(data)
+    elif (data.mode == "playGame"):   playGameTimerFired(data)
+    elif (data.mode == "help"):       helpTimerFired(data)
+
+def redrawAll(canvas, data):
+    if (data.mode == "splash"): splashRedrawAll(canvas, data)
+    elif (data.mode == "playGame"):   playGameRedrawAll(canvas, data)
+    elif (data.mode == "help"):       helpRedrawAll(canvas, data)
+
+
+#####################################
+#         SPLASH SCREEN             #
+#####################################
+
+def splashMousePressed(event, data):
+    x, y = event.x, event.y
+    if (data.width-400 < x < data.width-50) and (150 < y < 200):
+        # data.mode = ...
+        print("mode1")
+    elif (data.width-400 < x < data.width-50) and (250 < y < 300):
+        print("mode2")
+    elif (data.width-400 < x < data.width-50) and (350 < y < 400):
+        print("mode3")
+
+def splashKeyPressed(event, data):
     pass
 
-def keyPressed(event, data): 
-    # attempting to turn tracing on and off
+def splashTimerFired(data):
+    data.currImg = getImage(data)
+
+def splashRedrawAll(canvas, data):
+    drawBackground(canvas, data)
+    drawFrame(canvas, data.currImg, data)
+    drawTitle(canvas, data)
+    drawFakeButtons(canvas, data)
+    drawAnImage(canvas)
+
+def drawFakeButtons(canvas, data):
+    canvas.create_text(data.width - 220, 100, text="Select a Mode", font="Arial 50 bold")
+    canvas.create_rectangle(data.width-400, 150, data.width-50, 200, fill="lightgray", width=0)
+    canvas.create_rectangle(data.width-400, 250, data.width-50, 300, fill="lightgray", width=0)
+    canvas.create_rectangle(data.width-400, 350, data.width-50, 400, fill="lightgray", width=0)
+    canvas.create_text(1175, 175, text="MODE 1", font="Arial 35 bold")
+    canvas.create_text(1175, 275, text="MODE 2", font="Arial 35 bold")
+    canvas.create_text(1175, 375, text="MODE 3", font="Arial 35 bold")
+
+def drawAnImage(canvas):
+    # how to properly resize?
+    path = 'bassethound.jpg'
+    image = Image.open(path)
+    imageWidth, imageHeight = image.size
+    newImageWidth, newImageHeight = imageWidth//3, imageHeight//3
+    image = image.resize((newImageWidth, newImageHeight), Image.ANTIALIAS)
+    photo = ImageTk.PhotoImage(image)
+    label = Label(image=photo)
+    label.image = photo # keep a reference!
+    canvas.create_image(900 + newImageWidth//2, 500 + newImageHeight//2, image = photo)
+    canvas.create_text(900 + newImageWidth//2, 500 + newImageHeight//2, text = "some relevant image", font = "Arial 20 bold")
+
+
+   
+#####################################
+#             MODE 2                #
+#####################################
+
+def mode2MousePressed(event, data):
+    pass
+
+def mode2KeyPressed(event, data):
+    pass
+
+def mode2TimerFired(data):
+    pass
+
+def mode2RedrawAll(canvas, data):
+    pass
+
+#####################################
+#             MODE 3                #
+#####################################
+
+def mode2MousePressed(event, data):
+    pass
+
+def mode2KeyPressed(event, data):
+    pass
+
+def mode2TimerFired(data):
+    pass
+
+def mode2RedrawAll(canvas, data):
+    pass
+
+#####################################
+#         OPEN CV TKINTER           #
+#####################################
+
+# ON AND OFF TRACKING
+def openCVkeyPressed(event, data): 
     if (event.keysym == "space"):
         data.collecting = False if data.collecting else True
 
-def timerFired(data):
+def openCVtimerFired(data):
     data.currImg = getImage(data)
 
-def redrawAll(canvas, data):
+def openCVredrawAll(canvas, data):
     drawBackground(canvas, data)
     drawFrame(canvas, data.currImg, data)
     drawTitle(canvas, data)
@@ -60,11 +179,7 @@ def drawFrame(canvas, img, data): # draws each webcam frame
 def getImage(data): # gets a new frame
     (ret, frame) = data.cap.read()
     frame=cv2.flip(frame,1)
-
-    ############################
     cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-
     mask = cv2.inRange(cv2image, data.yellowLower, data.yellowUpper)
     mask = cv2.erode(mask, None, iterations=2)
     mask = cv2.dilate(mask, None, iterations=2)
@@ -72,7 +187,6 @@ def getImage(data): # gets a new frame
     cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_SIMPLE)[-2]
     center = None
-
     if len(cnts) > 0:
         c = max(cnts, key=cv2.contourArea)
         ((x, y), radius) = cv2.minEnclosingCircle(c)
@@ -82,10 +196,8 @@ def getImage(data): # gets a new frame
             cv2.circle(frame, (int(x), int(y)), int(radius),
                        (0, 255, 255), 2)
             cv2.circle(frame, center, 5, (0, 0, 255), -1)
-
     # update the points queue
     data.pts.appendleft(center)
-
     # loop over the set of tracked points
     for i in range(1, len(data.pts)):
         # if either of the tracked points are None, ignore
@@ -97,8 +209,6 @@ def getImage(data): # gets a new frame
             cv2.line(frame, data.pts[i - 1], data.pts[i], (0, 0, 255), thickness)
     if data.collecting == False: 
         data.pts = deque(maxlen=args["buffer"]) 
-
-
     finalFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     img=Image.fromarray(finalFrame)
     h=675
@@ -122,9 +232,9 @@ def drawText(canvas, width, height):
     canvas.create_text(width/2, height/2, text = "W o r d", font = "Ariel 40 bold")
 
 
-####################################
-# adapted from course notes
-####################################
+#####################################
+#  RUN FUNCTION (from course notes) #
+#####################################
 
 def run(width=300, height=300):
     def redrawAllWrapper(canvas, data):
