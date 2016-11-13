@@ -5,14 +5,15 @@ import csv
 import numpy as np
 import cv2
 import argparse
-import imutils
 from collections import deque 
+import random
+import string 
 
 def rgbString(red, green, blue):
     return "#%02x%02x%02x" % (red, green, blue)
 
 ap = argparse.ArgumentParser()
-ap.add_argument("-b", "--buffer", type=int, default=40,
+ap.add_argument("-b", "--buffer", type=int, default=64,
     help="max buffer size")
 args = vars(ap.parse_args())
 
@@ -24,27 +25,118 @@ def init(data):
     data.cap = cap
     data.yellowLower = (20, 100, 100)
     data.yellowUpper = (30, 255, 255)
-    data.maxlen = 40
-    data.pts= deque(maxlen=args["buffer"]) 
-    data.collecting = True
+    data.pts = deque(maxlen=args["buffer"]) 
+    data.mode = 0
+    data.bubbleMode = 1
+    bubbleinit(data)
 
+def bubbleinit(data):
+    data.cx = [random.randint(100, 800) for i in range(10)]
+    data.cy = [random.randint(100, 600) for i in range(10)]
+    data.radius = 20
+    data.images = 'apple.jpg'
+    data.bubbleWords = "APPLE"
+    data.bubbleLetters1 = getLetters(data, data.bubbleWords[0])
+    #data.bubbleLetters2 = getLetters(data, data.bubbleWords[1])
+    #data.AllLetters = [data.bubbleLetters1]
+    data.bubbleScreen = 0
+    data.bubbleWin = -1
+    data.bubbleLost = 1
+    data.bubblePlay = -2
+    data.bubbleStartMode = 0
+    data.bubbleUp = 1
+    data.bubble
+    
+def getLetters(data, word):
+    result = list(word)
+    remaining = 10 - len(word)
+    for i in range(remaining):
+        result += chr(random.randint(ord('A'), ord('U')))
+    return result
+    
+def checkDone(data, result):
+    s = list("APPLE")
+    count = 0
+    for i in range(result):
+        if result[i] == s[i]:
+            count += 1
+            continue
+        else:
+            data.bubbleScreen = data.bubbleLost
+    if count == len(s):
+        data.bubbleScreen = data.bubbleWin
+            
+        
 def mousePressed(event, data):
-    pass
+    if data.mode == 0:
+        data.mode = data.bubbleMode
+    if data.mode == data.bubbleMode:
+        if data.bubbleScreen == data.bubblePlay:
+            result = []
+            for i in range(10):
+                if (event.x > data.cx[i] - data.radius and 
+                    event.x < data.cx[i] + data.radius and 
+                    event.y > data.cy - data.radius and 
+                    event.y < data.cy + data.radius):
+                        result += data.bubbleLetters1[i]
+            checkDone(data, result)
+                    
 
-def keyPressed(event, data): 
-    # attempting to turn tracing on and off
-    if (event.keysym == "space"):
-        data.collecting = False if data.collecting else True
+def keyPressed(event, data):
+    if data.mode == data.bubbleMode:
+        if data.bubbleScreen == data.bubbleStartMode:
+            if event.keysym == "Up": data.bubbleScreen = data.bubblePlay
 
 def timerFired(data):
     data.currImg = getImage(data)
+    if data.mode == data.bubbleMode:
+        if data.bubbleScreen == data.bubblePlay:
+            for i in range(10):
+                if data.cy[i] >= 20 and data.cy[i] < 725:
+                    data.cy[i] += 1
+                else:
+                    data.cy[i] += 1
+
+    
+
+def drawBubbleGame(canvas, data):
+    if data.bubbleScreen == data.bubbleStartMode:
+        canvas.create_text(500, 100, text = "Press Up Arrow to Start!", font = "Ariel 50")
+    if data.bubbleScreen == data.bubblePlay:
+        drawImage(canvas, data.images)
+        drawBubbles(canvas, data, data.bubbleLetters1)
+            
+def drawBubbles(canvas, data, letters):
+    canvas.create_oval(data.cx[0] - data.radius, data.cy[0] - data.radius, data.cx[0] + data.radius, data.cy[0] + data.radius, fill = "white")
+    canvas.create_text(data.cx[0], data.cy[0], text = letters[0], font = "Ariel 30 bold")
+    canvas.create_oval(data.cx[1] - data.radius, data.cy[1] - data.radius, data.cx[1] + data.radius, data.cy[1] + data.radius, fill = "white")
+    canvas.create_text(data.cx[1], data.cy[1], text = letters[1], font = "Ariel 30 bold")
+    canvas.create_oval(data.cx[2] - data.radius, data.cy[2] - data.radius, data.cx[2] + data.radius, data.cy[2] + data.radius, fill = "white")
+    canvas.create_text(data.cx[2], data.cy[2], text = letters[2], font = "Ariel 30 bold")
+    canvas.create_oval(data.cx[3] - data.radius, data.cy[3] - data.radius, data.cx[3] + data.radius, data.cy[3] + data.radius, fill = "white")
+    canvas.create_text(data.cx[3], data.cy[3], text = letters[3], font = "Ariel 30 bold")
+    canvas.create_oval(data.cx[4] - data.radius, data.cy[4] - data.radius, data.cx[4] + data.radius, data.cy[4] + data.radius, fill = "white")
+    canvas.create_text(data.cx[4], data.cy[4], text = letters[4], font = "Ariel 30 bold")
+    canvas.create_oval(data.cx[5] - data.radius, data.cy[5] - data.radius, data.cx[5] + data.radius, data.cy[5] + data.radius, fill = "white")
+    canvas.create_text(data.cx[5], data.cy[5], text = letters[5], font = "Ariel 30 bold")
+    canvas.create_oval(data.cx[6] - data.radius, data.cy[6] - data.radius, data.cx[6] + data.radius, data.cy[6] + data.radius, fill = "white")
+    canvas.create_text(data.cx[6], data.cy[6], text = letters[6], font = "Ariel 30 bold")
+    canvas.create_oval(data.cx[7] - data.radius, data.cy[7] - data.radius, data.cx[7] + data.radius, data.cy[7] + data.radius, fill = "white")
+    canvas.create_text(data.cx[7], data.cy[7], text = letters[7], font = "Ariel 30 bold")
+    canvas.create_oval(data.cx[8] - data.radius, data.cy[8] - data.radius, data.cx[8] + data.radius, data.cy[8] + data.radius, fill = "white")
+    canvas.create_text(data.cx[8], data.cy[8], text = letters[8], font = "Ariel 30 bold")
+    canvas.create_oval(data.cx[9] - data.radius, data.cy[9] - data.radius, data.cx[9] + data.radius, data.cy[9] + data.radius, fill = "white")
+    canvas.create_text(data.cx[9], data.cy[9], text = letters[9], font = "Ariel 30 bold")
+
+        
+        
 
 def redrawAll(canvas, data):
     drawBackground(canvas, data)
     drawFrame(canvas, data.currImg, data)
     drawTitle(canvas, data)
-    drawImage(canvas, 500, 500)
-    drawText(canvas, 500, 500)
+    if data.mode == data.bubbleMode:
+        drawBubbleGame(canvas, data)
 
 def drawTitle(canvas, data):
     canvas.create_text(data.width//2, data.height-30, text="TITLE", font="Arial 65 bold")
@@ -93,11 +185,7 @@ def getImage(data): # gets a new frame
         if data.pts[i - 1] is None or data.pts[i] is None:
             continue
         thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
-        if data.collecting == True: 
-            cv2.line(frame, data.pts[i - 1], data.pts[i], (0, 0, 255), thickness)
-    if data.collecting == False: 
-        data.pts = deque(maxlen=args["buffer"]) 
-
+        cv2.line(frame, data.pts[i - 1], data.pts[i], (0, 0, 255), thickness)
 
     finalFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     img=Image.fromarray(finalFrame)
@@ -105,21 +193,19 @@ def getImage(data): # gets a new frame
     desiredW=900
     img=img.crop((0,0,desiredW,h))
     tkImg=ImageTk.PhotoImage(image=img)
+    print(data.pts)
     return tkImg
 
-def drawImage(canvas, width, height):
-    path = 'bassethound.jpg'
+def drawImage(canvas, path):
     image = Image.open(path)
     imageWidth, imageHeight = image.size
-    newImageWidth, newImageHeight = imageWidth//3, imageHeight//3
+    newImageWidth, newImageHeight = imageWidth//10, imageHeight//10
     image = image.resize((newImageWidth, newImageHeight), Image.ANTIALIAS)
     photo = ImageTk.PhotoImage(image)
     label = Label(image=photo)
     label.image = photo # keep a reference!
     canvas.create_image(newImageWidth//2, newImageHeight//2, image = photo)
 
-def drawText(canvas, width, height):
-    canvas.create_text(width/2, height/2, text = "W o r d", font = "Ariel 40 bold")
 
 
 ####################################
