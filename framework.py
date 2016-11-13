@@ -24,13 +24,18 @@ def init(data):
     data.cap = cap
     data.yellowLower = (20, 100, 100)
     data.yellowUpper = (30, 255, 255)
-    data.pts = deque(maxlen=args["buffer"]) 
+    data.maxlen = 40
+    data.pts= deque(maxlen=args["buffer"]) 
+    data.collecting = True
 
 def mousePressed(event, data):
     pass
 
-def keyPressed(event, data):
-    pass
+def keyPressed(event, data): 
+    # attempting to turn tracing on and off
+    if (event.keysym == "space"):
+        data.collecting = False if data.collecting else True
+        print (data.collecting)
 
 def timerFired(data):
     data.currImg = getImage(data)
@@ -41,6 +46,7 @@ def redrawAll(canvas, data):
     drawTitle(canvas, data)
     drawImage(canvas, 500, 500)
     drawText(canvas, 500, 500)
+    drawLetter(canvas)
 
 def drawTitle(canvas, data):
     canvas.create_text(data.width//2, data.height-30, text="TITLE", font="Arial 65 bold")
@@ -89,7 +95,11 @@ def getImage(data): # gets a new frame
         if data.pts[i - 1] is None or data.pts[i] is None:
             continue
         thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
-        cv2.line(frame, data.pts[i - 1], data.pts[i], (0, 0, 255), thickness)
+        if data.collecting == True: 
+            cv2.line(frame, data.pts[i - 1], data.pts[i], (0, 0, 255), thickness)
+    if data.collecting == False: 
+        data.pts = deque(maxlen=args["buffer"]) 
+
 
     finalFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     img=Image.fromarray(finalFrame)
@@ -97,7 +107,6 @@ def getImage(data): # gets a new frame
     desiredW=900
     img=img.crop((0,0,desiredW,h))
     tkImg=ImageTk.PhotoImage(image=img)
-    print(data.pts)
     return tkImg
 
 def drawImage(canvas, width, height):
