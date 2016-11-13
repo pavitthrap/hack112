@@ -37,6 +37,8 @@ def init(data):
     data.pts= deque(maxlen=args["buffer"]) 
     data.collecting = True
     data.mode = "splash"
+    data.wordArray = ["APPLE", "CAT", "FACE", "HEART", "BIRD", "PYTHON"]
+    data.index = 0
 
 #####################################
 #         MODE DISPATCHER           #
@@ -44,22 +46,22 @@ def init(data):
 
 def mousePressed(event, data):
     if (data.mode == "splash"):     splashMousePressed(event, data)
-    elif (data.mode == "playGame"):   playGameMousePressed(event, data)
+    elif (data.mode == "tracing"):   tracingMousePressed(event, data)
     elif (data.mode == "help"):       helpMousePressed(event, data)
 
 def keyPressed(event, data):
-    if (data.mode == "splash"): splashKeyPressed(event, data)
-    elif (data.mode == "playGame"):   playGameKeyPressed(event, data)
-    elif (data.mode == "help"):       helpKeyPressed(event, data)
+    if (data.mode == "splash"):     splashKeyPressed(event, data)
+    elif (data.mode == "tracing"):   tracingKeyPressed(event, data)
+    elif (data.mode == "help"):      helpKeyPressed(event, data)
 
 def timerFired(data):
-    if (data.mode == "splash"): splashTimerFired(data)
-    elif (data.mode == "playGame"):   playGameTimerFired(data)
+    if (data.mode == "splash"):     splashTimerFired(data)
+    elif (data.mode == "tracing"):   tracingTimerFired(data)
     elif (data.mode == "help"):       helpTimerFired(data)
 
 def redrawAll(canvas, data):
-    if (data.mode == "splash"): splashRedrawAll(canvas, data)
-    elif (data.mode == "playGame"):   playGameRedrawAll(canvas, data)
+    if (data.mode == "splash"):     splashRedrawAll(canvas, data)
+    elif (data.mode == "tracing"):   tracingRedrawAll(canvas, data)
     elif (data.mode == "help"):       helpRedrawAll(canvas, data)
 
 
@@ -70,11 +72,12 @@ def redrawAll(canvas, data):
 def splashMousePressed(event, data):
     x, y = event.x, event.y
     if (data.width-400 < x < data.width-50) and (150 < y < 200):
-        # data.mode = ...
-        print("mode1")
+        data.mode = "tracing"
     elif (data.width-400 < x < data.width-50) and (250 < y < 300):
-        print("mode2")
+        pass
+        # data.mode = ...
     elif (data.width-400 < x < data.width-50) and (350 < y < 400):
+        # data.mode = ...
         print("mode3")
 
 def splashKeyPressed(event, data):
@@ -95,7 +98,7 @@ def drawFakeButtons(canvas, data):
     canvas.create_rectangle(data.width-400, 150, data.width-50, 200, fill="lightgray", width=0)
     canvas.create_rectangle(data.width-400, 250, data.width-50, 300, fill="lightgray", width=0)
     canvas.create_rectangle(data.width-400, 350, data.width-50, 400, fill="lightgray", width=0)
-    canvas.create_text(1175, 175, text="MODE 1", font="Arial 35 bold")
+    canvas.create_text(1175, 175, text=" tracing ", font="Arial 35 bold")
     canvas.create_text(1175, 275, text="MODE 2", font="Arial 35 bold")
     canvas.create_text(1175, 375, text="MODE 3", font="Arial 35 bold")
 
@@ -115,37 +118,47 @@ def drawAnImage(canvas):
 
    
 #####################################
-#             MODE 2                #
+#             TRACING               #
 #####################################
 
-def mode2MousePressed(event, data):
+def tracingMousePressed(event, data):
     pass
 
-def mode2KeyPressed(event, data):
+def tracingKeyPressed(event, data):
+    if event.keysym == 'Right' or even.keysym == 'Down':
+        data.index = (data.index + 1)%len(data.wordArray)
+    if event.keysym == "c" or event.keysym == 'C':
+        checkWord(data)
+
+def checkWord(data):
     pass
 
-def mode2TimerFired(data):
-    pass
+def tracingTimerFired(data):
+    data.currImg = getImage(data)
 
-def mode2RedrawAll(canvas, data):
-    pass
+def tracingRedrawAll(canvas, data):
+    drawBackground(canvas, data)
+    drawFrame(canvas, data.currImg, data)
+    drawTitle(canvas, data)
+    drawWord(canvas, data)
 
-#####################################
-#             MODE 3                #
-#####################################
+def drawWord(canvas, data):
+    word = data.wordArray[data.index]
+    canvas.create_text(500, 450, text=word, font="Arial 250 bold")
+    drawWordImage(canvas)
 
-def mode2MousePressed(event, data):
-    pass
-
-def mode2KeyPressed(event, data):
-    pass
-
-def mode2TimerFired(data):
-    pass
-
-def mode2RedrawAll(canvas, data):
-    pass
-
+def drawWordImage(canvas):
+    # how to properly resize?
+    path = 'APPLE.png'
+    image = Image.open(path)
+    imageWidth, imageHeight = image.size
+    newImageWidth, newImageHeight = imageWidth//3, imageHeight//3
+    image = image.resize((newImageWidth, newImageHeight), Image.ANTIALIAS)
+    photo = ImageTk.PhotoImage(image)
+    label = Label(image=photo)
+    label.image = photo # keep a reference!
+    canvas.create_image(900 + newImageWidth//2, 500 + newImageHeight//2, image = photo)
+   
 #####################################
 #         OPEN CV TKINTER           #
 #####################################
