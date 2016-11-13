@@ -22,7 +22,7 @@ def show_frame():
     lmain.configure(image=imgtk)
     lmain.after(10, show_frame)
 
-def draw_rect():
+def draw_rect(): pass
     
 
 show_frame()
