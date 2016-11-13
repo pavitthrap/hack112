@@ -56,6 +56,7 @@ def init(data):
     data.rectWidth,data.rectHeight=75,20
     data.rectY=data.height/2+75
 
+
 ######################
 def mousePressed(event, data):
     # ignore mousePres	sed events
@@ -137,28 +138,14 @@ def ifClicked(data,x,y):
     else: return False
 
 def createPopUp(data):
-    master = Tk()
-    Label(master, text="First Name").grid(row=0)
-    Label(master, text="Last Name").grid(row=1)
-    
-    e1 = Entry(master)
-    e2 = Entry(master)
-    
-    e1.grid(row=0, column=1)
-    e2.grid(row=1, column=1)
-# def close_window(): 
-#     window.destroy()
-    Button(master, text='Quit', command=master.quit).grid(row=3, column=0, sticky=W, pady=4)
-    Button(master, text='Show', command=show_entry_fields(data)).grid(row=3, column=1, sticky=W, pady=4)
-    
-    master.mainloop( )
+    pass
 
 def show_entry_fields(data):
    print("First Name: %s\nLast Name: %s" % (e1.get(), e2.get()))
    data.article=e1.get()
    master.quit
 #######################################    
-def drawHomePage(canvas,data):
+def drawHomePage(canvas,data,root):
     canvas.create_text(data.width/2,data.height/2-data.homeMargin, 
     text="Practice Reading Mode", font="Helvetica %d" % (data.homeScreenSize))
     canvas.create_text(data.width/2,data.height/2+data.homeMargin, 
@@ -166,7 +153,13 @@ def drawHomePage(canvas,data):
     canvas.create_rectangle(data.width/2-data.rectWidth,data.rectY-data.rectHeight,
     data.width/2+data.rectWidth,data.rectY+data.rectHeight,fill="pink")
     canvas.create_text(data.width/2, data.rectY, text="Input Article")
-    
+    buttonFrame = Frame(root)
+    b1 = Button(buttonFrame, text="Click here!!!", command=button1Pressed)
+    b1.grid(row=0,column=0)
+    buttonFrame.pack(side=TOP)
+    canvas.pack()
+    redrawAll(canvas)
+
     
         
     # book=Entry(canvas)
@@ -175,7 +168,6 @@ def drawHomePage(canvas,data):
 
     
 def drawHelpScreen(canvas,data):
-    data.helpTextX=data.helpTextX+data.increment 
     canvas.create_text(data.helpTextX, data.height/2-data.homeMargin, text=
     "Color in the right bubbles to spell out the word in the picture!", font="Helvetica 11", fill=
     data.helpTextColor)
@@ -183,37 +175,6 @@ def drawHelpScreen(canvas,data):
     "Press mouse to return to caller's mode")
     
 
-# def drawCell(canvas, data, row, col):
-#     x0=data.width/2-data.currentX+row*data.cellWidth
-#     y0=data.height/2-data.currentY+col*data.cellHeight
-#     x1=x0+data.cellWidth
-#     y1=y0+data.cellHeight
-#     color=data.fillCell
-#     if [row,col]==data.currentCell:
-#         if color=="lightyellow":
-#             color="yellow"
-#         elif color=="lightblue":
-#             color="blue"
-#     canvas.create_rectangle(x0,y0,x1,y1,fill=color)
-#     canvas.create_text((x0+x1)/2,(y0+y1)/2-data.margin,text="(%d,%d)"%(row,col))
-#     canvas.create_text((x0+x1)/2,(y0+y1)/2+data.margin,text="%d"%
-#     (data.board[row][col]))
-# 
-# def drawBoard(canvas, data):
-#     for row in range(data.rows):
-#         data.fillCell="lightyellow" if row%2==0 else "lightblue"
-#         for col in range(data.cols):
-#             drawCell(canvas, data, row, col)
-#             data.fillCell=("lightblue" if data.fillCell=="lightyellow" 
-#             else "lightyellow")
-# 
-# def drawRedDot(canvas,data):
-#     data.dotRadius=5
-#     x0=data.width/2-data.dotRadius
-#     y0=data.height/2-data.dotRadius
-#     x1=data.width/2+data.dotRadius
-#     y1=data.height/2+data.dotRadius
-#     canvas.create_oval(x0,y0,x1,y1,fill="red")
 
 def drawTimer(canvas,data):
     displayTime=math.ceil(data.currentTime)
@@ -237,16 +198,27 @@ def drawInstructions(canvas,data):
 
 
 def drawGame(canvas,data):
-    pass #draw book here
+    pass #draw bubbles here
 
+def drawGameLose(canvas,data):
+    canvas.create_text(data.width/2,data.height/2-data.homeMargin,
+    text="Game Over!!!", font="Helvetica 20")
+    canvas.create_text(data.width/2,data.height/2+data.homeMargin,
+    text="You Lose :-(", font="Helvetica 20")
+
+def drawGameWin(canvas,data):
+    canvas.create_text(data.width/2,data.height/2-data.homeMargin, 
+    text="You Win!!!", font="Helvetica 20")
+    canvas.create_text(data.width/2,data.height/2+data.homeMargin, 
+    text="Press key or mouse to start over", font="Helvetica 12")
 
 ################################3
 
-def redrawAll(canvas, data):
+def redrawAll(canvas, data,root):
     #drawBoard(canvas, data)
     #drawScore(canvas, data)
     if data.isHomeScreen==True:
-        drawHomePage(canvas,data)
+        drawHomePage(canvas,data,root)
     elif data.isHelpScreen==True:
         drawHelpScreen(canvas,data)
     elif data.isGameScreen==True:
@@ -259,9 +231,31 @@ def redrawAll(canvas, data):
 
 def runBook(width=1400, height=800):
     # DO NOT MODIFY THIS FUNCTION!!!!
-    def redrawAllWrapper(canvas, data):
+    
+    # Set up data and call init
+    class Struct(object): pass
+    data = Struct()
+    data.width = width
+    data.height = height
+    data.timerDelay = 100 # milliseconds
+    init(data)
+    # create the root and the canvas
+    root = Tk()
+    global canvas # make canvas global for button1Pressed function
+    canvas = Canvas(root, width=data.width, height=data.height)
+    # Store canvas in root and in canvas itself for callbacks
+    root.canvas = canvas.canvas = canvas
+    # Set up canvas data and call init
+    canvas.data = { }
+    canvas.data["message"] = "none"
+    canvas.data["count"] = 0
+    canvas.pack()
+    data.textvar = StringVar()
+    data.start=True
+    # set up events
+    def redrawAllWrapper(canvas, data,root):
         canvas.delete(ALL)
-        redrawAll(canvas, data)
+        redrawAll(canvas, data,root)
         canvas.update()    
 
     def mousePressedWrapper(event, canvas, data):
@@ -274,29 +268,16 @@ def runBook(width=1400, height=800):
 
     def timerFiredWrapper(canvas, data):
         timerFired(data)
-        redrawAllWrapper(canvas, data)
+        redrawAllWrapper(canvas, data,root)
         # pause, then call timerFired again
         canvas.after(data.timerDelay, timerFiredWrapper, canvas, data)
-    # Set up data and call init
-    class Struct(object): pass
-    data = Struct()
-    data.width = width
-    data.height = height
-    data.timerDelay = 100 # milliseconds
-    init(data)
-    # create the root and the canvas
-    root = Tk()
-    canvas = Canvas(root, width=data.width, height=data.height)
-    canvas.pack()
-    data.textvar = StringVar()
-    data.start=True
-    # set up events
     root.bind("<Button-1>", lambda event:
                             mousePressedWrapper(event, canvas, data))
     root.bind("<Key>", lambda event:
                             keyPressedWrapper(event, canvas, data))
     timerFiredWrapper(canvas, data)
     # and launch the app
+    
     root.mainloop()  # blocks until window is closed
     print("bye!")
 
