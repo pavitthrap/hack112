@@ -296,12 +296,15 @@ def drawBubbleGame(canvas, data):
         drawBubbles(canvas, data, data.bubbleLetters)
         canvas.create_text(970, 400, text = data.word, font = "Ariel 30", 
                             fill = "white")
+        canvas.create_text(500, 50, text = "Click on the right letters to spell he word. Press r to reset the letter placement", font = "Ariel 20")
     if data.bubbleScreen == data.bubbleLost:
         canvas.create_text(200, 100, text = "You Lose :(", font = "Ariel 40 bold")
+        canvas.create_text(500, 350, text = "Click anywere to play again", font = "Ariel 30")
     if data.bubbleScreen == data.bubbleWin:
         canvas.create_text(200, 100, text = "You Win!! :D", 
                             font = "Ariel 40 bold", fill = "lightgreen")
         drawImage(canvas, 'happy.jpg', 2)
+        canvas.create_text(500, 350, text = "Click anywere to play again", font = "Ariel 30")
 
     
 def getLetters(data, word):
