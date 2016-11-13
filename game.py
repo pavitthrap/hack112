@@ -37,7 +37,8 @@ def init(data):
     data.pts= deque(maxlen=args["buffer"]) 
     data.collecting = True
     data.mode = "splash"
-    data.wordArray = ["APPLE", "CAT", "FACE", "HEART", "BIRD", "PYTHON"]
+    data.wordArray = ["APPLE", "CAT", "HEART", "BIRD", "STONE"]
+    data.imageList = ["apple.jpg", "cat.jpg", "heart.jpg", "bird.jpg", "stones.jpg"]
     data.index = 0
 
 #####################################
@@ -125,13 +126,12 @@ def tracingMousePressed(event, data):
     pass
 
 def tracingKeyPressed(event, data):
-    if event.keysym == 'Right' or even.keysym == 'Down':
+    if event.keysym == 'Right' or event.keysym == 'Down':
         data.index = (data.index + 1)%len(data.wordArray)
-    if event.keysym == "c" or event.keysym == 'C':
-        checkWord(data)
+        data.pts = deque()
+    elif event.keysym == 'Left':
+        data.index = (data.index-1)%len(data.wordArray)
 
-def checkWord(data):
-    pass
 
 def tracingTimerFired(data):
     data.currImg = getImage(data)
@@ -139,17 +139,21 @@ def tracingTimerFired(data):
 def tracingRedrawAll(canvas, data):
     drawBackground(canvas, data)
     drawFrame(canvas, data.currImg, data)
-    drawTitle(canvas, data)
+    # drawTitle(canvas, data)
     drawWord(canvas, data)
+    drawInstructions(canvas, data)
+    tracingDrawImage(canvas, 500, 500, data)
 
 def drawWord(canvas, data):
     word = data.wordArray[data.index]
-    canvas.create_text(500, 450, text=word, font="Arial 250 bold")
-    drawWordImage(canvas)
+    canvas.create_text(500, 450, text=word, font="Arial 250")
 
-def drawWordImage(canvas):
-    # how to properly resize?
-    path = 'APPLE.png'
+def drawInstructions(canvas, data):
+    msg = "Press the right arrow for the next word!"
+    canvas.create_text(data.width//2, data.height-25, text=msg, font="Arial 25 bold")
+
+def tracingDrawImage(canvas, imageWidth, imageHeight, data):
+    path = data.imageList[data.index]
     image = Image.open(path)
     imageWidth, imageHeight = image.size
     newImageWidth, newImageHeight = imageWidth//3, imageHeight//3
@@ -157,7 +161,9 @@ def drawWordImage(canvas):
     photo = ImageTk.PhotoImage(image)
     label = Label(image=photo)
     label.image = photo # keep a reference!
-    canvas.create_image(900 + newImageWidth//2, 500 + newImageHeight//2, image = photo)
+    canvas.create_image(data.width-200, data.height//2, image = photo)
+
+
    
 #####################################
 #         OPEN CV TKINTER           #
