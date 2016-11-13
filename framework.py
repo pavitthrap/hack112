@@ -12,7 +12,7 @@ def rgbString(red, green, blue):
     return "#%02x%02x%02x" % (red, green, blue)
 
 ap = argparse.ArgumentParser()
-ap.add_argument("-b", "--buffer", type=int, default=64,
+ap.add_argument("-b", "--buffer", type=int, default=40,
     help="max buffer size")
 args = vars(ap.parse_args())
 
@@ -142,7 +142,7 @@ def run(width=300, height=300):
     data = Struct()
     data.width = width
     data.height = height
-    data.timerDelay = 100 # milliseconds
+    data.timerDelay = 0 # milliseconds
     init(data)
     root = Tk()
     canvas = Canvas(root, width=data.width, height=data.height)
