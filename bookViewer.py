@@ -215,7 +215,7 @@ def drawImage(canvas, width, height,path):
     canvas.create_image(newImageWidth//2, newImageHeight//2, image = photo)
 
 def drawGame(canvas,data):
-    drawImage(canvas,data.width/2,data.height/2,"book.jfif")
+    drawImage(canvas,data.width/2,data.height/2,"book2.jpg")
      #draw book here
 
 
