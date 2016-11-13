@@ -48,22 +48,22 @@ def init(data):
 def mousePressed(event, data):
     if (data.mode == "splash"):     splashMousePressed(event, data)
     elif (data.mode == "tracing"):   tracingMousePressed(event, data)
-    elif (data.mode == "help"):       helpMousePressed(event, data)
+    elif (data.mode == "bubble"):       bubbleMousePressed(event, data)
 
 def keyPressed(event, data):
     if (data.mode == "splash"):     splashKeyPressed(event, data)
     elif (data.mode == "tracing"):   tracingKeyPressed(event, data)
-    elif (data.mode == "help"):      helpKeyPressed(event, data)
+    elif (data.mode == "bubble"):      bubbleKeyPressed(event, data)
 
 def timerFired(data):
     if (data.mode == "splash"):     splashTimerFired(data)
     elif (data.mode == "tracing"):   tracingTimerFired(data)
-    elif (data.mode == "help"):       helpTimerFired(data)
+    elif (data.mode == "bubble"):       bubbleTimerFired(data)
 
 def redrawAll(canvas, data):
     if (data.mode == "splash"):     splashRedrawAll(canvas, data)
     elif (data.mode == "tracing"):   tracingRedrawAll(canvas, data)
-    elif (data.mode == "help"):       helpRedrawAll(canvas, data)
+    elif (data.mode == "bubble"):       bubbleRedrawAll(canvas, data)
 
 
 #####################################
@@ -99,9 +99,9 @@ def drawFakeButtons(canvas, data):
     canvas.create_rectangle(data.width-400, 150, data.width-50, 200, fill="lightgray", width=0)
     canvas.create_rectangle(data.width-400, 250, data.width-50, 300, fill="lightgray", width=0)
     canvas.create_rectangle(data.width-400, 350, data.width-50, 400, fill="lightgray", width=0)
-    canvas.create_text(1175, 175, text=" tracing ", font="Arial 35 bold")
-    canvas.create_text(1175, 275, text="MODE 2", font="Arial 35 bold")
-    canvas.create_text(1175, 375, text="MODE 3", font="Arial 35 bold")
+    canvas.create_text(1175, 175, text="tracing practice", font="Arial 35 bold")
+    canvas.create_text(1175, 275, text="bubble pop", font="Arial 35 bold")
+    canvas.create_text(1175, 375, text="read a book", font="Arial 35 bold")
 
 def drawAnImage(canvas):
     # how to properly resize?
@@ -123,7 +123,9 @@ def drawAnImage(canvas):
 #####################################
 
 def tracingMousePressed(event, data):
-    pass
+    x, y = event.x, event.y
+    if (data.width-50 > x > data.width-150) and (data.height-20 > y > data.height- 60):
+        data.mode = "splash"
 
 def tracingKeyPressed(event, data):
     if event.keysym == 'Right' or event.keysym == 'Down':
@@ -143,6 +145,7 @@ def tracingRedrawAll(canvas, data):
     drawWord(canvas, data)
     drawInstructions(canvas, data)
     tracingDrawImage(canvas, 500, 500, data)
+    drawBackButton(canvas, data)
 
 def drawWord(canvas, data):
     word = data.wordArray[data.index]
@@ -163,13 +166,32 @@ def tracingDrawImage(canvas, imageWidth, imageHeight, data):
     label.image = photo # keep a reference!
     canvas.create_image(data.width-200, data.height//2, image = photo)
 
+def drawBackButton(canvas, data):
+    canvas.create_rectangle(data.width-50, data.height - 20, data.width-150, data.height-60, fill="lightgray", width=0)
+    canvas.create_text(data.width-100, data.height-40, text="BACK", font="Arial 25 bold")
 
-   
+
+
 #####################################
-#         OPEN CV TKINTER           #
+#             BUBBLE                #
+##################################### 
+
+def bubbleMousePressed(event, data):
+    pass
+
+def bubbleKeyPressed(event, data):
+    pass
+
+def bubbleTimerFired(data):
+    pass
+
+def bubbleRedrawAll(canvas, data):
+    pass
+
+#####################################
+#    OPEN CV TKINTER  FUNCTIONS     #
 #####################################
 
-# ON AND OFF TRACKING
 def openCVkeyPressed(event, data): 
     if (event.keysym == "space"):
         data.collecting = False if data.collecting else True
