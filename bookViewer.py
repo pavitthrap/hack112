@@ -103,15 +103,6 @@ def startGame(data):
     data.isGameScreen=True 
     data.wasHomeScreen=False
 
-
-# def resetTime(data):
-#     if data.isGameScreen==True:
-#         data.currentTime=20
-        
-# def openWinGame(data):
-#     if data.isGameScreen==True:
-#         data.isGameScreen=False 
-#         data.isGameOverWin=True
         
 def openHelpScreen(data):
     if data.isHomeScreen==True:
@@ -184,20 +175,6 @@ def drawHelpScreen(canvas,data):
     
 
 
-def drawTimer(canvas,data):
-    displayTime=math.ceil(data.currentTime)
-    x0=0
-    x1=70
-    y0=0
-    y1=20
-    if data.currentTime<5:
-        color="red"
-    elif data.currentTime<10:
-        color="yellow"
-    else:
-        color="lightgray"
-    canvas.create_rectangle(x0,y0,x1,y1,fill=color)
-    canvas.create_text((x0+x1)/2,(y0+y1)/2,text="Timer: %d" %(displayTime))
 
 def drawInstructions(canvas,data):
     canvas.create_text(data.width/2, data.height-data.margin, fill="blue",
