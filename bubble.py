@@ -29,8 +29,12 @@ def roundHalfUp(d):
 ##############################################
 ## ignore_rest: graphics go below here!
 ##############################################
-
-from tkinter import *
+import Tkinter as tk
+import numpy as np
+import cv2
+from Tkinter import *
+from PIL import Image
+from PIL import ImageTk
 
 
 def make2dList(rows, cols, value):
