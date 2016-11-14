@@ -5,7 +5,6 @@ import csv
 import numpy as np
 import cv2
 import argparse
-import imutils
 from collections import deque 
 import string
 import random
